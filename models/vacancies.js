@@ -8,7 +8,7 @@ const VacantSchema = Schema({
     active      : Boolean, 
     image       : String,
     finished    : Boolean,
-    //applicants  : [{ type: Schema.ObjectId, ref: 'User' }],
+    applicants  : [{ type: Schema.ObjectId, ref: 'User' }],
     comnets     : [{ body: String, date: Date }]
 });
 
