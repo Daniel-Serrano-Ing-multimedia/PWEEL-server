@@ -2,6 +2,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const bcrypt =  require("bcrypt");
 const jwt =  require("../services/jwt");
+const moment = require ('moment');
 const User = require( '../models/users' ); 
 
 const signUp = ( req, res ) => {
@@ -10,6 +11,8 @@ const signUp = ( req, res ) => {
     user.name           = name;
     user.lastname       = lastname;
     user.email          = email.toLowerCase();
+    user.signUpDate     = moment().unix();
+    user.cv.aboutMe     = `Hi my name is ${ name } ${ lastname }`;
     // verificar que se llenaron los campos de contraseñas
     if ( password && repeatpassword ) {
         // verificar que los campos de contraseñas son iguales
