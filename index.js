@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const app = require("./app");
 const port = process.env.PORT || 3977;
 
-const { API_VERSION, IP_SERVER, CLUSTER_USER, CLUSTER_PASSWORD, CLUSTER_DATA_BASE } = require("./config");
+const { API_NAME, API_VERSION, IP_SERVER, CLUSTER_USER, CLUSTER_PASSWORD, CLUSTER_DATA_BASE } = require("./config");
 
 //mongoose.connect( `mongodb://localhost:27017/daneilalejandroserrano` );
 //conexion de server a basse de datos
@@ -19,7 +19,7 @@ mongoose.connect(
         console.log("#############################");
         console.log("########## API REST #########");
         console.log("#############################");
-        console.log(`http://${IP_SERVER}:${port}/api/${API_VERSION}/`);
+        console.log(`http://${ IP_SERVER }:${ port }/${ API_NAME }/${ API_VERSION }/`);
       });
     }
   }

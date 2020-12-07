@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const app = express();
-const { API_VERSION } = require("./config");
+const { API_NAME, API_VERSION } = require("./config");
 
 //load routings
 const usersRoutes = require( './routes/users' );
@@ -26,8 +26,8 @@ app.use((req, res, next) => {
 });
 //....
 // Router Basic
-app.use( `/api/${ API_VERSION }`, usersRoutes );
-app.use( `/api/${ API_VERSION }`, authRoutes );
+app.use( `/${ API_NAME }/${ API_VERSION }`, usersRoutes );
+app.use( `/${ API_NAME }/${ API_VERSION }`, authRoutes );
 //...
 
 module.exports = app;
