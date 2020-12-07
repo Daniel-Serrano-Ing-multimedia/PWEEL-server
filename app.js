@@ -6,10 +6,12 @@ const { API_VERSION } = require("./config");
 
 //load routings
 const usersRoutes = require( './routes/users' );
+const authRoutes = require( './routes/auth' );
 //....
 
 app.use( bodyParser.urlencoded( {extended: false} ) );
 app.use( bodyParser.json()) ;
+
 
 //configure Header HTTP
 app.use((req, res, next) => {
@@ -25,6 +27,7 @@ app.use((req, res, next) => {
 //....
 // Router Basic
 app.use( `/api/${ API_VERSION }`, usersRoutes );
+app.use( `/api/${ API_VERSION }`, authRoutes );
 //...
 
 module.exports = app;

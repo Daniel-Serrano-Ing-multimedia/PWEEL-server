@@ -66,7 +66,12 @@ const signIn = ( req, res ) => {
                 } else if ( !userStored.active ) { // Verificar que el usuario se encuentra activo
                     res.status(401).send({ code: 401, message: "Este usuario no se encuentra activo." });
                 } else{
-                    res.status(200).send({ code: 200, message: "Ingreso exitoso.", user: userStored});
+                    res.status(200).send({ 
+                        code: 200, 
+                        message: "Ingreso exitoso.", 
+                        accessToken  : jwt.createAccessToken( userStored ),
+                        refreshToken : jwt.createRefreshToken( userStored )
+                    });
                 }
             } );
         }
