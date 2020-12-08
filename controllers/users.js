@@ -177,7 +177,22 @@ const getAvatar = ( req, res ) =>{
 }
 
 const activateUser = ( req, res ) =>{
-    console.log ( "activateUser..." );
+    const { id } = req.params;
+    const { active } = req.body;
+    User.findByIdAndUpdate( id, { active }, ( err, userStored ) =>{
+        if ( err ) {
+            res.status(500).send({ code: 500, message: 'Error del servidor.' });
+        } else if ( !userStored ) {
+            res.status(404).send({ code: 404, message: 'Usuario no encontrado.' });
+        }else{
+            if ( active ) {
+                res.status(200).send({ code: 200, message: 'Usuario activado.' });
+            } else {
+                res.status(200).send({ code: 200, message: 'Usuario desactivado.' });
+            }
+        }
+
+    } )
 } 
 
 module.exports = {
