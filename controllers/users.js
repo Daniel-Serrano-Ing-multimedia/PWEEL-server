@@ -4,6 +4,7 @@ const bcrypt =  require("bcrypt");
 const jwt =  require("../services/jwt");
 const moment = require ('moment');
 const User = require( '../models/users' ); 
+const { exists } = require('../models/users');
 
 const signUp = ( req, res ) => {
     const user = new User();
@@ -131,7 +132,7 @@ const uploadAvatar = ( req, res ) =>{
     const params = req.params;
     User.findById( { _id: params.id }, ( err, userData ) => {
         if ( err ) {
-            res.status(500).send({ code: 500, message: 'Error en el servidor' });
+            res.status(500).send({ code: 500, message: 'Error en el servidor', error: err });
         } else if ( !userData ) {
             res.status(400).send({ code: 400, message: 'Error en el servidor' });
         } else{
@@ -145,23 +146,34 @@ const uploadAvatar = ( req, res ) =>{
                 if ( fileExt !== 'png' && fileExt !== 'jpg' ) {
                     res.status(400).send({ code: 400, message : 'extension de imagen invalida (debe ser .jpg o .png)'});   
                 } else {
-                    User.findByIdAndUpdate({ _id: params.if }, user, ( err, userResult ) => {
+                    user.avatar = fileName;
+                    User.findByIdAndUpdate({ _id: params.id }, user, ( err, userResult ) => {
                         if ( err ) {
                             res.status(500).send({ code:500, message : 'Error del servidor' });
                         } else if ( !userResult ) {
                             res.status(404).send({ code: 404, message : 'Nose ha encontrado usuario' });
                         }else{
-                            res.status(200).send({ code: 200, avatarName: fileName});
+                            res.status(200).send({ code: 200, avatarName: fileName, user: userResult  });
                         }
                     } );
                 }          
+            }else {
+                res.status(500).send({ code: 500, message : 'No se ha enviado nigun archivo' });
             }
         }
     } );
 }
 
 const getAvatar = ( req, res ) =>{
-    console.log ( "getAvatar..." );
+    const avatarName = req.params.avatarName;
+    const filePath  = "./uploads/avatar/"+avatarName;
+    fs.exists( filePath, exists => {
+        if ( !exists ) {
+            res.status(404).send({ message: 'El avatar que buscas no existe' });
+        } else {
+            res.sendFile( path.resolve( filePath ) );
+        }
+    } );
 }
 
 const activateUser = ( req, res ) =>{
