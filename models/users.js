@@ -18,7 +18,10 @@ const UserSchema = Schema({
     identificationType  : String,
     IdentificationId    : String,
     signUpDate          : Date,
-    labors              : [{ type: Schema.ObjectId, ref: 'Labor'}],  
+    Labors              : [{
+        labor   : { type: Schema.ObjectId, ref: 'Labor'},
+        employScore   : Number,   
+    }],  
     email               :{
        type     :String,
        unique   : true

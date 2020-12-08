@@ -81,6 +81,52 @@ const signIn = ( req, res ) => {
     });  
 }
 
+const updateUser = async ( req, res ) =>{
+    let userData    = req.body;
+    const params    = req.params;
+    if ( userData.password ) {
+        try {
+            await bcrypt.hash(userData.password, 10, (err, hash) => {
+                if ( err ) {
+                    res.status(500).send({ message: 'error al encriptar la contraseña' });
+                } else {
+                    userData.password = hash;
+                }
+            })
+        }catch (err){
+            res.status(500).send({ message: 'error al encriptar la contraseña' });
+        }
+    }
+    if ( !userData.email ) {
+        res.status(404).send({ code: 404, message: "El email es obligatorio." });
+    } else {
+        userData.email  = req.body.email.toLowerCase();
+        User.findByIdAndUpdate( { _id: id }, userData, ( err, userUpdated ) => {
+            if ( err ) { // Verificar si hubo error en el servidor  
+                res.status(500).send({ message: "Error del servidor." });
+            } else if ( !userUpdated ) { // verificar si se actualizo el usuario
+                res.status(404).send({ code: 404, message: "No se ha encontrado el ususrio." });
+            } else{
+                res.status(200).send({ message: 'Usuario actualizado correctamente' });
+            }
+        } );
+    }
+}
+
+const deleteUser = ( req, res ) =>{
+    const { id } = req.params;
+
+    User.findOneAndDelete( id, ( err, userDeleted ) => {
+        if ( err ) {
+            res.status(500).send({ code: 500, message: 'error de servidor', error: err });
+        } else if ( !userDeleted ){
+            res.status(404).send({ code : 400, message: 'no se ha encontrado el usuario' });
+        }else{
+            res.status(200).send({ code: 200, message: 'Usuario eliminado correctamente' });
+        }
+    } );
+}
+
 const uploadAvatar = ( req, res ) =>{
     console.log ( "uploadAvatar..." );
 }
@@ -89,17 +135,9 @@ const getAvatar = ( req, res ) =>{
     console.log ( "getAvatar..." );
 }
 
-const updateUser = ( req, res ) =>{
-    console.log ( "updateUser..." ); 
-}
-
 const activateUser = ( req, res ) =>{
     console.log ( "activateUser..." );
 } 
-
-const deleteUser = ( req, res ) =>{
-    console.log ( "deleteUser..." );
-}
 
 module.exports = {
     signUp,
