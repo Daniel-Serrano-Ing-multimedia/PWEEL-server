@@ -128,7 +128,36 @@ const deleteUser = ( req, res ) =>{
 }
 
 const uploadAvatar = ( req, res ) =>{
-    console.log ( "uploadAvatar..." );
+    const params = req.params;
+    User.findById( { _id: params.id }, ( err, userData ) => {
+        if ( err ) {
+            res.status(500).send({ code: 500, message: 'Error en el servidor' });
+        } else if ( !userData ) {
+            res.status(400).send({ code: 400, message: 'Error en el servidor' });
+        } else{
+            let user = userData;
+            if ( req.files ) {
+                let filepath = req.files.avatar.path;
+                let fileSplit = filepath.split('\\');
+                let fileName =  fileSplit[2];
+                let extSplit = fileName.split(".");
+                let fileExt = extSplit[1];      
+                if ( fileExt !== 'png' && fileExt !== 'jpg' ) {
+                    res.status(400).send({ code: 400, message : 'extension de imagen invalida (debe ser .jpg o .png)'});   
+                } else {
+                    User.findByIdAndUpdate({ _id: params.if }, user, ( err, userResult ) => {
+                        if ( err ) {
+                            res.status(500).send({ code:500, message : 'Error del servidor' });
+                        } else if ( !userResult ) {
+                            res.status(404).send({ code: 404, message : 'Nose ha encontrado usuario' });
+                        }else{
+                            res.status(200).send({ code: 200, avatarName: fileName});
+                        }
+                    } );
+                }          
+            }
+        }
+    } );
 }
 
 const getAvatar = ( req, res ) =>{
@@ -146,5 +175,6 @@ module.exports = {
     getAvatar,
     updateUser,
     activateUser,
-    deleteUser
+    deleteUser,
+    getAvatar
 }
