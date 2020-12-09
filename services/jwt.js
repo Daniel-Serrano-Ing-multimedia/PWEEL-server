@@ -11,7 +11,7 @@ exports.createAccessToken =  user => {
         email       : user.email,
         role        : user.role,
         createToken : moment().unix(),
-        exp: moment().add(10, 'minutes').unix()
+        exp: moment().add( 3, 'hours' ).unix()
     }
     return jwt.encode( playload, SECRET_KEY );
 }
@@ -19,7 +19,7 @@ exports.createAccessToken =  user => {
 exports.createRefreshToken = user =>{
     const playload = {
         id  : user._id,
-        exp : moment().add(30,'days').unix()
+        exp : moment().add( 30,'days' ).unix()
     }    
     return jwt.encode( playload, SECRET_KEY );
 }

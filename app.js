@@ -7,6 +7,7 @@ const { API_NAME, API_VERSION } = require("./config");
 //load routings
 const usersRoutes = require( './routes/users' );
 const authRoutes = require( './routes/auth' );
+const laborsRoutes = require( './routes/labors' )
 //....
 
 app.use( bodyParser.urlencoded( {extended: false} ) );
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 // Router Basic
 app.use( `/${ API_NAME }/${ API_VERSION }`, usersRoutes );
 app.use( `/${ API_NAME }/${ API_VERSION }`, authRoutes );
+app.use( `/${ API_NAME }/${ API_VERSION }`, laborsRoutes );
 //...
 
 module.exports = app;

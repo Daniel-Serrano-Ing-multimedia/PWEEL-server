@@ -2,14 +2,15 @@ const mongoose = require( 'mongoose' );
 const Schema = mongoose.Schema;
 
 const LaborSchema = Schema({
-    employer_id     : String, 
+    employer_id     : { type: Schema.ObjectId, ref: 'User' }, 
     name            : String,
     description     : String,
-    aviable         : Boolean, 
+    category        : String,   
+    aviable         : { type: Boolean, default: true }, 
     image           : String,
-    finished        : Boolean,
+    finished        : { type: Boolean, default: false },
     numVacancies    : Number,
-    employerScore   : Number,
+    employerScore   : { type: Number, default: 0 },
     publishDate     : Date,
     startDate       : Date,
     finishDate      : Date,

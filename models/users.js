@@ -6,7 +6,7 @@ const UserSchema = Schema({
     name                : String,
     lastname            : String,
     password            : String,
-    role                : { type :String, default: 'user'},
+    role                : { type :String, default: 'user' },
     active              : { type :Boolean, default: true }, 
     avatar              : String,
     employerScore       : { type :Number, default: 0 },
@@ -18,7 +18,7 @@ const UserSchema = Schema({
     identificationType  : String,
     IdentificationId    : String,
     signUpDate          : Date,
-    Labors              : [{
+    laborsDone          : [{
         labor   : { type: Schema.ObjectId, ref: 'Labor'},
         employScore   : Number,   
     }],  

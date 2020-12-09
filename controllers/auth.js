@@ -1,6 +1,6 @@
 const jwt = require ('../services/jwt');
 const moment = require ('moment');
-const user = require('../models/users');
+const User = require('../models/users');
 
 const willExpireToken = token  => {
     const { exp } = jwt.decodedToken( token );
@@ -20,7 +20,7 @@ const refreshAccessToken = ( req, res ) => {
     }else{
         //Busca al usuario en la DB
         const { id } = jwt.decodedToken( refreshToken );
-        user.findOne( { _id: id }, ( err, userStored ) => {
+        User.findOne( { _id: id }, ( err, userStored ) => {
             if ( err ) { // Verificar si hubo un error en el servidor
                 res.status(500).send({ code: 500, message: "Error del servidor." });
             } else if ( !userStored ){ // Verificar si se encuentra el ususario
