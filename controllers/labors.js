@@ -8,8 +8,6 @@ const createLabor = ( req, res ) => {
     const laborData = req.body;
     const labor = new Labor();
     
-   
-    console.log( 'createLabor... ', user_id, laborData );
     if ( !laborData.name || !laborData.description || !laborData.numVacancies ) {
         res.status(404).send({ code: 404, message: 'name, description y numVacancies son obligatorios' });
     } else {
@@ -48,7 +46,16 @@ const getLabors = ( req, res ) => {
 } 
 
 const deleteLabor = ( req, res ) => {
-    console.log( 'deleteLabor.. ' );
+    const { id } = req.params;
+    Labor.findOneAndDelete( {_id: id }, ( err, laborDeleted ) => {
+        if ( err ) {
+            res.status(500).send({ code: 500, message: 'Error del servidor.', error: err });
+        } else if ( !laborDeleted ) {
+            res.status(404).send({ code: 404, message: 'Labor no encontrada.' });
+        } else {
+            res.status(200).send({ code: 200, message: 'Labor eliminada correctamente.', labor: laborDeleted });
+        }
+    } );
 } 
 
 //

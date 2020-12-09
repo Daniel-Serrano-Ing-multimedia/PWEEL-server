@@ -117,13 +117,13 @@ const updateUser = async ( req, res ) =>{
 const deleteUser = ( req, res ) =>{
     const { id } = req.params;
 
-    User.findOneAndDelete( id, ( err, userDeleted ) => {
+    User.findOneAndDelete( {_id: id }, ( err, userDeleted ) => {
         if ( err ) {
             res.status(500).send({ code: 500, message: 'error de servidor', error: err });
         } else if ( !userDeleted ){
             res.status(404).send({ code : 400, message: 'no se ha encontrado el usuario' });
         }else{
-            res.status(200).send({ code: 200, message: 'Usuario eliminado correctamente' });
+            res.status(200).send({ code: 200, message: 'Usuario eliminado correctamente', user: userDeleted });
         }
     } );
 }
