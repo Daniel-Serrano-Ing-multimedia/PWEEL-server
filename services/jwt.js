@@ -11,7 +11,7 @@ exports.createAccessToken =  user => {
         email       : user.email,
         role        : user.role,
         createToken : moment().unix(),
-        exp: moment().add( 3, 'hours' ).unix()
+        exp: moment().add( 24, 'hours' ).unix()
     }
     return jwt.encode( playload, SECRET_KEY );
 }

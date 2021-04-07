@@ -4,8 +4,8 @@ const bcrypt =  require("bcrypt");
 const jwt =  require("../services/jwt");
 const moment = require ('moment');
 const User = require( '../models/users' ); 
-const { exists } = require('../models/users');
 
+// registrar usuario
 const signUp = ( req, res ) => {
     const user = new User();
     const { name, lastname, email, password, repeatpassword } = req.body;
@@ -48,7 +48,7 @@ const signUp = ( req, res ) => {
     }
 
 } 
-
+// autenticar usuario
 const signIn = ( req, res ) => {
     const { email, password } =  req.body;
     const emailLower =  email.toLowerCase();
@@ -81,39 +81,30 @@ const signIn = ( req, res ) => {
         }
     });  
 }
-
+// actualizar usuario
 const updateUser = async ( req, res ) =>{
     let userData    = req.body;
-    const params    = req.params;
+    const { id }    = req.params;
     if ( userData.password ) {
         try {
-            await bcrypt.hash(userData.password, 10, (err, hash) => {
-                if ( err ) {
-                    res.status(500).send({ message: 'error al encriptar la contraseña' });
-                } else {
-                    userData.password = hash;
-                }
-            })
+            // hash al password
+            const salt = await bcryptjs.genSalt(10);
+            userData.password = await bcrypt.hash(userData.password, salt );
+               
         }catch (err){
             res.status(500).send({ message: 'error al encriptar la contraseña' });
         }
     }
-    if ( !userData.email ) {
-        res.status(404).send({ code: 404, message: "El email es obligatorio." });
-    } else {
-        userData.email  = req.body.email.toLowerCase();
-        User.findByIdAndUpdate( { _id: id }, userData, ( err, userUpdated ) => {
-            if ( err ) { // Verificar si hubo error en el servidor  
-                res.status(500).send({ message: "Error del servidor." });
-            } else if ( !userUpdated ) { // verificar si se actualizo el usuario
-                res.status(404).send({ code: 404, message: "No se ha encontrado el ususrio." });
-            } else{
-                res.status(200).send({ message: 'Usuario actualizado correctamente' });
-            }
-        } );
+    // Actulizar el ususario
+    try {
+        const updatedUser = await  User.findByIdAndUpdate( id, userData );
+        res.status(200).send({ message: 'Usuario Actualizado correctamente', ussuario : updatedUser });
+    } catch (error) {
+        res.status(500).send({ message: 'error al actualizar usuario', error : error });
     }
+    
 }
-
+// eliminar usuario
 const deleteUser = ( req, res ) =>{
     const { id } = req.params;
 
@@ -127,43 +118,42 @@ const deleteUser = ( req, res ) =>{
         }
     } );
 }
+// actualizar avatar
+const uploadAvatar = async ( req, res ) =>{
+    const { id } = req.params;
+    console.log( '****** subir Avatar : ', id )
+    try {
+        const userData = await User.findById( proyecto, ( userData , error)=> ( {
 
-const uploadAvatar = ( req, res ) =>{
-    const params = req.params;
-    User.findById( { _id: params.id }, ( err, userData ) => {
-        if ( err ) {
-            res.status(500).send({ code: 500, message: 'Error en el servidor', error: err });
-        } else if ( !userData ) {
-            res.status(400).send({ code: 400, message: 'Error en el servidor' });
-        } else{
-            let user = userData;
-            if ( req.files ) {
-                let filepath = req.files.avatar.path;
-                let fileSplit = filepath.split('\\');
-                let fileName =  fileSplit[2];
-                let extSplit = fileName.split(".");
-                let fileExt = extSplit[1];      
-                if ( fileExt !== 'png' && fileExt !== 'jpg' ) {
-                    res.status(400).send({ code: 400, message : 'extension de imagen invalida (debe ser .jpg o .png)'});   
-                } else {
-                    user.avatar = fileName;
-                    User.findByIdAndUpdate({ _id: params.id }, user, ( err, userResult ) => {
-                        if ( err ) {
-                            res.status(500).send({ code:500, message : 'Error del servidor' });
-                        } else if ( !userResult ) {
-                            res.status(404).send({ code: 404, message : 'Nose ha encontrado usuario' });
-                        }else{
-                            res.status(200).send({ code: 200, avatarName: fileName, user: userResult  });
-                        }
-                    } );
-                }          
-            }else {
-                res.status(500).send({ code: 500, message : 'No se ha enviado nigun archivo' });
-            }
-        }
-    } );
+        } ) );
+        console.log( '****** subir Avatar' )
+        // verificar que el ususario exista
+        if ( !userData ) return res.status(404).send({ code: 400, message: 'No se ha encontrado el usuario' });
+        // file extension
+        let filepath = req.files.avatar.path;
+        let fileSplit = filepath.split('\\');
+        let fileName =  fileSplit[2];
+        let textSplit = fileName.split(".");
+        let fileExt = textSplit[1];
+        // verificar extencion del archivo
+        console.log( 'file Extension : ', fileExt )
+        if ( fileExt !== 'png' && fileExt !== 'jpg' ) {
+            console.log( 'extension no valida  ' )
+            throw  'extension de imagen invalida (debe ser .jpg o .png)'; 
+        }   
+        const { id } = req.params;
+        userData.avatar = fileName;
+        // Actualizar avatar
+        console.log( 'lo va a guarda..' )
+        const updatedUser = await User.findByIdAndUpdate({ _id: id }, userData, );
+        console.log( 'lo guarda..' )
+        res.status(200).send({ message: 'Avatar Actualizado', avatar : updatedUser.avatar });
+
+    } catch (error) {
+        res.status(500).send({ code: 500, message: 'Error en el servidor', error });
+    }
 }
-
+// obtener usuario
 const getAvatar = ( req, res ) =>{
     const avatarName = req.params.avatarName;
     const filePath  = "./uploads/avatar/"+avatarName;

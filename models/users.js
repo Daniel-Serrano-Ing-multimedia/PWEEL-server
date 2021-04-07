@@ -3,33 +3,30 @@ const Schema = mongoose.Schema;
 // Other Models
 
 const UserSchema = Schema({
-    name                : String,
+    name                : { type : String, required : true },
     lastname            : String,
-    password            : String,
+    password            : { type : String, required : true },
+    email               :{ type :String, unique : true, required : true },
     role                : { type :String, default: 'user' },
     active              : { type :Boolean, default: true }, 
-    avatar              : String,
+    avatar              : { type : String, default : null },
     employerScore       : { type :Number, default: 0 },
     employeeScore       : { type :Number, default: 0 },
-    sex                 : Boolean,
+    sex                 : String,
     adress              : String,
     cellphone           : String,
     birthDay            : Date,
-    identificationType  : String,
+    identificationType  : { type : String, },
     IdentificationId    : String,
     signUpDate          : Date,
-    laborsDone          : [{
-        labor   : { type: Schema.ObjectId, ref: 'Labor'},
-        employScore   : Number,   
-    }],  
-    email               :{
-       type     :String,
-       unique   : true
-    },
+    creado              : { type : Date, default: Date.now() },
     cv                  :{
         aboutMe     : String,
         description : String
-    } 
+    },
+    laborsDone: [{
+        labor       : { type: Schema.ObjectId, ref: 'Labor'},  
+    }]  
 });
 
 module.exports = mongoose.model( "User", UserSchema );
