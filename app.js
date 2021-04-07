@@ -7,7 +7,8 @@ const { API_NAME, API_VERSION } = require("./config");
 //load routings
 const usersRoutes = require( './routes/users' );
 const authRoutes = require( './routes/auth' );
-const laborsRoutes = require( './routes/labors' )
+const laborsRoutes = require( './routes/labors' );
+const employRoutes = require( './routes/employ' );
 //....
 
 app.use( bodyParser.urlencoded( {extended: false} ) );
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
 app.use( `/${ API_NAME }/${ API_VERSION }`, usersRoutes );
 app.use( `/${ API_NAME }/${ API_VERSION }`, authRoutes );
 app.use( `/${ API_NAME }/${ API_VERSION }`, laborsRoutes );
+app.use( `/${ API_NAME }/${ API_VERSION }`, employRoutes );
 //...
 
 module.exports = app;

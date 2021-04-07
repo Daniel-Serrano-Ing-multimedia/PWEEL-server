@@ -1,8 +1,8 @@
 const moment = require ('moment');
-const { Mongoose, mongo } = require('mongoose');
+const { mongo } = require('mongoose');
 const Labor = require( '../models/labors' ); 
-const { exists } = require('../models/users');
 
+// crear labor
 const createLabor = ( req, res ) => {
     const { user_id } = req.params;
     const laborData = req.body;
@@ -19,7 +19,7 @@ const createLabor = ( req, res ) => {
         labor.publishDate       = moment().unix();
         labor.startDate         = laborData.startDate? laborData.startDate : moment().add( 7,'days' ).unix() ;
         labor.finishDate        = laborData.finishDate? laborData.finishDate : moment().add( 37,'days' ).unix();
-        labor.employer_id       = mongo.ObjectID( user_id ) ;
+        labor.employer          = mongo.ObjectID( user_id ) ;
 
         labor.save( ( err, laborStored ) => {
             if ( err ) {
@@ -32,13 +32,46 @@ const createLabor = ( req, res ) => {
         } );
     }
 } 
-
-const updateLabor = ( req, res ) => {
-    console.log( 'updateLabor... ' );
+// actualizar labor
+const updateLabor = async ( req, res ) => {
+    const { labor_id } = req.params;
+    const { id: userID } = req.user;
+    const { body : newLabor } = req;
+    try {
+        if( !labor_id ){ 
+            return res.status( 400 ).send( { code: 400, message: 'Usuario no especificado' } );
+        }
+        // obener labor
+        const labor = await Labor.findById( labor_id );
+        if( !labor ){
+            return res.status( 400 ).send( { code: 400, message: 'la labor no existe' } );
+        }
+        // comprobar que la labor pertenece a este usuario
+        if( userID != labor.employer ){
+            return res.status( 400 ).send( { code: 400, message: 'Esta Labor no pertenece a este usuario' } );
+        }
+        //editar labor
+        // actualizar labor
+        const response = await Labor.findByIdAndUpdate( { _id : labor_id } , newLabor, { new : true } );
+        
+        res.status( 200 ).send( { code: 200, labor : response } );
+    } catch (error) {
+        res.status( 400 ).send( { code: 400, message: 'La labor no existe', error } );
+    } 
 } 
 
-const getLabor = ( req, res ) => {
-    console.log( 'getLabor... ' );
+const getLabor = async ( req, res ) => {
+    const { id } = req.params;
+    try {
+        if( !id ){ 
+            return res.status( 400 ).send( { code: 400, message: 'Usuario no especificado' } );
+        }
+        // comporbar que exista la labor
+        const labor = await Labor.findById( id );
+        res.status( 200 ).send( { code: 200, labor } );
+    } catch (error) {
+        res.status( 400 ).send( { code: 400, message: 'La labor no existe', error } );
+    }
 } 
 
 const getLabors = ( req, res ) => {
