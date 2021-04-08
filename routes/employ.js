@@ -18,21 +18,21 @@ api.put( "/aply-labor/:laborID",
 );
 
 // Comentar una labor
-api.put( "/comment-labor/:laborID",
+api.put( "/coment-labor/:laborID",
   [ md_auth.ensureAuth, md_labor.laborExist ],
   EmployController.comentLabor 
 );
 
 //calificar employer
-api.put( "/qualify-employer/:employerID",
-  [ md_auth.ensureAuth ],
+api.put( "/qualify-employer/:laborID",
+  [ md_auth.ensureAuth, md_labor.laborExist ],
   EmployController.qualifyEmployer 
 );
 
 // retirarse como aplicante de una labor
-api.put( "/qualify-employer/:laborID",
+api.put( "/quit-aply-labor/:laborID",
   [ md_auth.ensureAuth, md_labor.laborExist ],
-  EmployController.qualifyEmployer 
+  EmployController.retireAplication 
 );
 
 module.exports= api;

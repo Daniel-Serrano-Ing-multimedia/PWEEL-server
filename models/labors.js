@@ -20,7 +20,7 @@ const LaborSchema = Schema({
     coments         : [ {
         user    : { type: Schema.ObjectId, ref: 'User' },
         body    : String,  
-        date    : { type: Date, default : Date.now() }
+        date    : { type: Date, default :  Date.now() }
     }]
 });
 
