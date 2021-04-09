@@ -7,7 +7,6 @@ exports.ensureAuth = ( req, res, next ) => {
         return res.status(403).send( { message: "La petición no tiene cabecera de autentificación" } );
     }
     const token = req.headers.authorization.replace(/['"]+/g, "");
-
     try{
         var playload = jwt.decode( token, SECRET_KEY );
         if ( playload.exp <= moment.unix() ){

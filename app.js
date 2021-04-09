@@ -9,6 +9,7 @@ const usersRoutes = require( './routes/users' );
 const authRoutes = require( './routes/auth' );
 const laborsRoutes = require( './routes/labors' );
 const employRoutes = require( './routes/employ' );
+const employerRoutes = require( './routes/employer' );
 //....
 
 app.use( bodyParser.urlencoded( {extended: false} ) );
@@ -32,6 +33,7 @@ app.use( `/${ API_NAME }/${ API_VERSION }`, usersRoutes );
 app.use( `/${ API_NAME }/${ API_VERSION }`, authRoutes );
 app.use( `/${ API_NAME }/${ API_VERSION }`, laborsRoutes );
 app.use( `/${ API_NAME }/${ API_VERSION }`, employRoutes );
+app.use( `/${ API_NAME }/${ API_VERSION }`, employerRoutes );
 //...
 
 module.exports = app;

@@ -24,4 +24,3 @@ mongoose.connect(
     }
   }
 );
-

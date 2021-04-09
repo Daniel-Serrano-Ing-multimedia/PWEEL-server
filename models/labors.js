@@ -14,7 +14,7 @@ const LaborSchema = Schema({
     publishDate     : { type: Date, default : Date.now() },
     startDate       : { type: Date, required : true },
     finishDate      : { type: Date, default :null },
-    applicants      : [{ type: Schema.ObjectId, ref: 'User' }],
+    aplicants      : [{ type: Schema.ObjectId, ref: 'User' }],
     employees       : [{ type: Schema.ObjectId, ref: 'User' }],
     categories        : [String],   
     coments         : [ {

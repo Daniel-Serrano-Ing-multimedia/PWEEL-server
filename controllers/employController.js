@@ -28,11 +28,11 @@ exports.aplyLabor = async ( req, res ) =>{
     // verificar que la labor tiene vacantes
     if ( labor.numVacancies < 1 )  throw 'Esta oferta ya no tiene vacantes';
     // verificar qwue el usuario no haya aplicado a esta labor
-    if ( labor.applicants.includes( user.id ) ) throw 'Ya has aplicado a esta oferta';
+    if ( labor.aplicants.includes( user.id ) ) throw 'Ya has aplicado a esta oferta';
     // *******************************************************************
     // ************** agregar al arreglo de aplicantes *******************
     // *******************************************************************
-    labor.applicants.push( user.id );
+    labor.aplicants.push( user.id );
     const laborUpdated = await Labor.findByIdAndUpdate( labor.id, labor );
     // verificar que haya actualizado en la base de datos
     if ( !laborUpdated ) throw 'No se ha podido actualizar la labor';
@@ -52,7 +52,6 @@ exports.comentLabor = async ( req, res ) =>{
     body : coment,
     date : Date.now()
   }
-  console.log( ' ids ', user.id, labor );
   try {
     // verificar que la labor existe
     //- done -  desde middelawre
@@ -129,14 +128,12 @@ exports.retireAplication = async ( req, res ) =>{
     // ********************  Verificaciones ******************************
     // *******************************************************************
     // verificar qwue el usuario haya aplicado a esta labor
-    if ( !labor.applicants.includes( user.id ) ) throw 'No has aplicado a esta oferta';
+    if ( !labor.aplicants.includes( user.id ) ) throw 'No has aplicado a esta oferta';
     // *******************************************************************
     // ************** retirar del arreglo de aplicantes ******************
     // *******************************************************************
     // retirar del array
-    console.log( ' ddd : ', labor.applicants, user.id )
-    labor.applicants = labor.applicants.filter( value => value != user.id );
-    console.log( 'retireAplication....', labor.aplicants );
+    labor.aplicants = labor.aplicants.filter( value => value != user.id );
     const laborUpdated = await Labor.findByIdAndUpdate( labor.id, labor );
     // verificar que haya actualizado en la base de datos
     if ( !laborUpdated ) throw 'No se ha podido actualizar la labor';

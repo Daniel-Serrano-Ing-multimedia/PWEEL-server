@@ -146,7 +146,6 @@ const uploadAvatar = async ( req, res ) =>{
         // Actualizar avatar
         console.log( 'lo va a guarda..' )
         const updatedUser = await User.findByIdAndUpdate({ _id: id }, userData, );
-        console.log( 'lo guarda..' )
         res.status(200).send({ message: 'Avatar Actualizado', avatar : updatedUser.avatar });
 
     } catch (error) {
