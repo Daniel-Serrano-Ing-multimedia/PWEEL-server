@@ -10,7 +10,10 @@ const LaborSchema = Schema({
     succes          : { type: Boolean, default: false },
     numVacancies    : { type: Number, requiered: true},
     employerScore   : { type: Number, default: 0 },
-    image           : { type: String, default : null },
+    image           : {
+        url      : { type: String, default : null },
+        publicId : { type: String, default : null }
+    },
     publishDate     : { type: Date, default : Date.now() },
     startDate       : { type: Date, required : true },
     finishDate      : { type: Date, default :null },

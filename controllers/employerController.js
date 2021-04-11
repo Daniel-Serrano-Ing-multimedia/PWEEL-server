@@ -3,10 +3,9 @@ const Labor = require( '../models/labors' );
 const User = require('../models/users');
 //validaciones
 const { validationResult } = require( 'express-validator' );
-//
-const moment = require ('moment');
-const { findOneAndUpdate } = require('../models/labors');
-const { urlencoded } = require('body-parser');
+// storage
+const cloudinary = require('cloudinary').v2;
+const { cloudinaryConfig } = require('../config');
 
 // Obtener aplicantes a una labor
 exports. getAplicants = async ( req, res, next ) => {
@@ -166,4 +165,45 @@ exports. finishdLabor = async ( req, res, next ) => {
   } catch (error) {
     res.status( 500 ).send( { code: 500, message: error , error: finish? 'No se ha podido finalizar labor' : 'No se ha podido configurar labor como en curso...' } );
   }
+}
+
+// subir imagen de Labor
+exports. uploadImage = async ( req, res ) => {
+  console.log(' uploadImage ')
+  let { file : labor} = req;
+  const { laborID } = req.params;
+		// funcion para subir el avatar con promesas
+		const uloadBufferToCloudinary = ( imageBuffer ) =>{
+			//cloudinary.config( cloudinaryConfig );
+			return new Promise( 
+				( resolve, reject ) => {
+					cloudinary.uploader.upload_stream({ resource_type: "image", tags: 'labor', folder : '/pweel/labor' }, ( error, result ) => {
+						if (error) return reject( error );
+	  			return  resolve (result);
+					}).end( imageBuffer );	
+				}		
+			)	
+		}	
+	try {
+			//*********************************************************
+			//*****************  Sibir a Cloudinary *******************
+			//*********************************************************
+			// configurar cloudinary
+			cloudinary.config( cloudinaryConfig );
+			// File upload to Cloudinary
+			labor = await uloadBufferToCloudinary( labor.buffer );
+			const newImageLabor = { 
+				url 			: labor.url,
+				publicId 	: labor.public_id
+			 }
+			//*********************************************************
+			//*****************  actualizar usuario *******************
+			//*********************************************************
+			const updateLabor = await Labor.findByIdAndUpdate( laborID, { image : newImageLabor }, { new : true } );
+			if( !updateLabor ) throw 'No existe la labor';
+			res.status( 200 ).send({ code: 200, message: 'Imagen actualizada', image  : updateLabor.image });
+
+	} catch (error) {
+		res.status(500).send({ code: 500, message: 'Error en el servidor', error });
+	}
 }

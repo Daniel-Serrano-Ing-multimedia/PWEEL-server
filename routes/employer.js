@@ -4,6 +4,7 @@ const EmployerController = require( '../controllers/employerController' );
 // midllewares
 const md_auth = require( '../middleware/authenticated' );
 const md_labor = require( '../middleware/laborExist' );
+const md_images = require( '../middleware/images' );
 // validation
 const { check } = require( 'express-validator' );
 // api
@@ -56,5 +57,14 @@ api.put( '/finish-labor/:laborID',
   EmployerController.finishdLabor
 );
 
+// subir imagen de Labor
+api.put( '/update-image-labor/:laborID', 
+  [ 
+    md_auth.ensureAuth, 
+    md_labor.laborExist,
+    md_images.imageExist
+  ],   
+  EmployerController.uploadImage
+);
 
 module.exports= api;

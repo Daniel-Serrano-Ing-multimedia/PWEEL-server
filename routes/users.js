@@ -1,9 +1,9 @@
 const express = require( 'express' );
+// controller
 const UserController = require( '../controllers/usersController' );
-
-const multiparty = require ( 'connect-multiparty' );
+// midllewares
+const md_images = require( '../middleware/images' );
 const md_auth = require( '../middleware/authenticated' );
-const md_upload_avatar = multiparty( {uploadDir: "./uploads/avatar"} );
 
 const api =  express.Router();
 
@@ -30,14 +30,15 @@ api.delete( "/delete-user/:id",
   UserController.deleteUser 
 );
 
-api.put( "/upload-avatar/:id",
-  [ md_auth.ensureAuth, md_upload_avatar ], 
+api.put( "/upload-avatar",
+  [ md_auth.ensureAuth, md_images.imageExist ], 
   UserController.uploadAvatar 
 );
 // to do Obtener usuarios ...
 
 
-api.get( "/get-avatar/:avatarName",
+api.get( "/get-avatar/:avatar",
+  [ md_auth.ensureAuth ],
   UserController.getAvatar 
 );
 

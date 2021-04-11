@@ -9,7 +9,10 @@ const UserSchema = Schema({
     email               :{ type :String, unique : true, required : true },
     role                : { type :String, default: 'user' },
     active              : { type :Boolean, default: true }, 
-    avatar              : { type : String, default : null },
+    avatar              : {
+        url      : { type: String, default : null },
+        publicId : { type: String, default : null }
+    },
     employerScore       : { 
         value : { type :Number, default: 0 }, 
         numVotes: { type :Number, default: 0 }
