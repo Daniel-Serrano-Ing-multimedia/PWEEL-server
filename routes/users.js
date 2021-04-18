@@ -4,10 +4,17 @@ const UserController = require( '../controllers/usersController' );
 // midllewares
 const md_images = require( '../middleware/images' );
 const md_auth = require( '../middleware/authenticated' );
-
+// validation
+const { check } = require( 'express-validator' );
 const api =  express.Router();
 
 api.post( "/sign-up",
+  [
+    check( 'name', 'El nombre es obligatorio' ).notEmpty(),
+    check( 'lastname', 'El apellido es obligatorio' ).notEmpty(),
+    check( 'email', 'Agrega un email válido' ).isEmail(),
+    check( 'password', 'El password debe ser de al menos 6 caracteres' ).isLength({ min : 6 }),
+  ],
   UserController.signUp 
 );
 

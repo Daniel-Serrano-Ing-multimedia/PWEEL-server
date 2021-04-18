@@ -1,55 +1,45 @@
-const fs = require( 'fs' );
-const path = require( 'path' );
 const bcrypt =  require("bcrypt");
 const jwt =  require("../services/jwt");
 const moment = require ('moment');
 const User = require( '../models/users' ); 
+//validaciones
+const { validationResult } = require( 'express-validator' );
 // storage
 const cloudinary = require('cloudinary').v2;
 const { cloudinaryConfig } = require('../config');
 
 // registrar usuario
-const signUp = ( req, res ) => {
-	const user = new User();
-	const { name, lastname, email, password, repeatpassword } = req.body;
-	user.name           = name;
-	user.lastname       = lastname;
+const signUp = async ( req, res ) => {
+	const { body } = req;
+	const { name, lastname, email, password } = body;
+	// *******************************************************************
+  // ********************  Verificaciones ******************************
+  // *******************************************************************
+  // verificar body
+  const errors = validationResult( req );
+  if ( !errors.isEmpty() ) return  res.status( 400 ).json({ errores : errors.array() });
+	// Verificar que el usuario no exista
+	let existUser = await User.findOne({ email });
+  if ( existUser ){ 
+		return res.status(400).json({ msg: 'el usuario ya esta registrado'});
+  }
+	// operarciones preliminares
+	// crear usuario
+	const user = new User( body );
 	user.email          = email.toLowerCase();
 	user.signUpDate     = moment().unix();
 	user.cv.aboutMe     = `Hi my name is ${ name } ${ lastname }`;
-	// verificar que se llenaron los campos de contraseñas
-	if ( password && repeatpassword ) {
-		// verificar que los campos de contraseñas son iguales
-		if ( password == repeatpassword ) {
-			// Encriptar contraseña.
-			bcrypt.hash ( password, 10, ( err, hash ) => {
-				//Verificar errores al encriptar
-				if ( !err ) {
-					user.password = hash;
-					user.save( ( err, userStored ) => {
-						// Verificar que el usuario no exista
-						if ( err ) {  
-							res.status(500).send({ code: 500, message: "Error el Usuario ya esta registrado.", error: err });    
-						} else {
-							//Verificar que el ususario fue creado correctamente
-							if ( userStored ) {
-								res.status(200).send({ code: 200, userCreated: userStored, message: "Usuario Creado correctamente." });   
-							} else {
-								res.status(404).send({ code: 404, message: "error al crear usuario" });   
-							} 
-						}
-					} );
-				} else {
-					res.status(500).send({ code: 500, message: "error al encriptar la contraseña" });  
-				}
-			} );       
-		} else {
-			res.status(404).send({code: 404 , message: "las contraseñas no coinciden." });
-		}
-	} else {
-		res.status(404).send({code: 404 , message: "Las contraseñas son obligatorias." });
+	try {
+		// Encriptar contraseña.
+		user.password = await bcrypt.hash ( password, 10 );
+		console.log( ' contraseña encriptada ', user.password)
+		// guardar usuario
+		console.log( 'user : ', user )
+	 	await user.save();
+		res.status( 200 ).send( { msg: 'Usuario registrado correctamente', user } );
+	} catch (error) {
+		res.status( 500 ).send( { msg: 'Hubo un error al registrar el usuario', error } );
 	}
-
 } 
 
 // autenticar usuario
