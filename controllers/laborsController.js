@@ -68,9 +68,10 @@ const getLabor = async ( req, res ) => {
         }
         // comporbar que exista la labor
         const labor = await Labor.findById( id );
+        if ( !labor )  throw { message :'La labor no existe', code : 404} ;
         res.status( 200 ).send( { code: 200, labor } );
     } catch (error) {
-        res.status( 400 ).send( { code: 400, message: 'La labor no existe', error } );
+        res.status( 500 ).send( { message: 'Error en el servidor', error } );
     }
 } 
 

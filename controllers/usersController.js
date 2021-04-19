@@ -21,7 +21,7 @@ const signUp = async ( req, res ) => {
 	// Verificar que el usuario no exista
 	let existUser = await User.findOne({ email });
   if ( existUser ){ 
-		return res.status(400).json({ msg: 'el usuario ya esta registrado'});
+		return res.status(400).json({ message: 'el usuario ya esta registrado'});
   }
 	// operarciones preliminares
 	// crear usuario
@@ -36,13 +36,12 @@ const signUp = async ( req, res ) => {
 		// guardar usuario
 		console.log( 'user : ', user )
 	 	await user.save();
-		res.status( 200 ).send( { msg: 'Usuario registrado correctamente', user } );
+		res.status( 200 ).send( { message: 'Usuario registrado correctamente', user } );
 	} catch (error) {
-		res.status( 500 ).send( { msg: 'Hubo un error al registrar el usuario', error } );
+		res.status( 500 ).send( { message: 'Hubo un error al registrar el usuario', error } );
 	}
 } 
 
-// autenticar usuario
 const signIn = ( req, res ) => {
 	const { email, password } =  req.body;
 	const emailLower =  email.toLowerCase();
